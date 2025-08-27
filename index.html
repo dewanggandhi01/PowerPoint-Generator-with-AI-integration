@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerPoint Generator - Your Text, Your Style</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Candara', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1e1e2f;
+            border-radius: 0;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            border: 2px solid #333344;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 3px solid #444455;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            font-family: 'Candara', sans-serif;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #b0b0c0;
+            font-family: 'Candara', sans-serif;
+        }
+
+        .form-container {
+            padding: 40px;
+            background: #1e1e2f;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: 'Candara', sans-serif;
+        }
+
+        .form-group .label-required {
+            color: #ff4757;
+        }
+
+        textarea, input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #444455;
+            border-radius: 0;
+            font-size: 1rem;
+            font-family: 'Candara', sans-serif;
+            transition: all 0.3s ease;
+            background: #2a2a3e;
+            color: #ffffff;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #00d2ff;
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.2);
+            background: #333344;
+        }
+
+        textarea::placeholder, input::placeholder {
+            color: #888899;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px dashed #555566;
+            border-radius: 0;
+            background: #2a2a3e;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #b0b0c0;
+            font-family: 'Candara', sans-serif;
+        }
+
+        .file-input-label:hover {
+            border-color: #00d2ff;
+            background: #333344;
+            color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+        }
+
+        .file-input-label.has-file {
+            border-color: #27ae60;
+            background: #1e3a1e;
+            color: #27ae60;
+        }
+
+        .file-input-label i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .provider-option {
+            position: relative;
+        }
+
+        .provider-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .provider-option label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #444455;
+            border-radius: 0;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #2a2a3e;
+            color: #b0b0c0;
+            font-family: 'Candara', sans-serif;
+            font-weight: 600;
+        }
+
+        .provider-option input[type="radio"]:checked + label {
+            border-color: #00d2ff;
+            background: #1a2a3a;
+            color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+        }
+
+        .provider-option label:hover {
+            border-color: #666677;
+            background: #333344;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3742fa 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Candara', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
+            background: linear-gradient(135deg, #0099cc 0%, #2f3542 100%);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.active {
+            display: inline-block;
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+            color: #ffffff;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #3a1a1a;
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 0;
+            margin-top: 15px;
+            border-left: 4px solid #ff4757;
+            display: none;
+            font-family: 'Candara', sans-serif;
+        }
+
+        .features {
+            background: #1a1a2e;
+            padding: 30px 40px;
+            border-top: 3px solid #333344;
+        }
+
+        .features h3 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: 'Candara', sans-serif;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 20px;
+            background: #2a2a3e;
+            border: 2px solid #333344;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .feature i {
+            font-size: 2rem;
+            color: #00d2ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+
+        .feature h4 {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-family: 'Candara', sans-serif;
+        }
+
+        .feature p {
+            color: #b0b0c0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            font-family: 'Candara', sans-serif;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #333344;
+            border-radius: 0;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff, #3742fa);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progress-animation 2s ease-in-out infinite;
+        }
+
+        @keyframes progress-animation {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            .provider-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                padding: 20px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444455;
+            border-radius: 0;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555566;
+        }
+
+        /* Selection color for dark theme */
+        ::selection {
+            background: rgba(0, 210, 255, 0.3);
+            color: #ffffff;
+        }
+
+        /* Focus glow effects */
+        .generate-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.4);
+        }
+
+        /* Additional dark theme enhancements */
+        small {
+            color: #888899 !important;
+            font-family: 'Candara', sans-serif;
+        }
+
+        /* Image Suggestion Panel Styles */
+        .image-suggestion-panel {
+            background: #2a2a3e;
+            border: 2px solid #444455;
+            border-radius: 0;
+            padding: 20px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .image-suggestion-panel h4 {
+            color: #00d2ff;
+            font-family: 'Candara', sans-serif;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .image-suggestion-panel h4 i {
+            color: #00d2ff;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+
+        .suggestion-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-btn {
+            background: linear-gradient(135deg, #444455 0%, #555566 100%);
+            color: #ffffff;
+            border: 2px solid #666677;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Candara', sans-serif;
+            text-transform: capitalize;
+        }
+
+        .suggestion-btn:hover {
+            background: linear-gradient(135deg, #00d2ff 0%, #3742fa 100%);
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .image-sources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .image-source-card {
+            background: #333344;
+            border: 2px solid #444455;
+            border-radius: 0;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .image-source-card:hover {
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .image-source-card i {
+            font-size: 2rem;
+            color: #00d2ff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+        }
+
+        .image-source-card h5 {
+            color: #ffffff;
+            font-family: 'Candara', sans-serif;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .image-source-card p {
+            color: #b0b0c0;
+            font-size: 0.8rem;
+            font-family: 'Candara', sans-serif;
+            line-height: 1.3;
+        }
+
+        .image-source-card .visit-btn {
+            background: linear-gradient(135deg, #00d2ff 0%, #3742fa 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            font-family: 'Candara', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .image-source-card .visit-btn:hover {
+            background: linear-gradient(135deg, #0099cc 0%, #2f3542 100%);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+        }
+
+        .suggestion-keywords {
+            background: #1a1a2e;
+            border: 1px solid #333344;
+            border-radius: 0;
+            padding: 10px;
+            margin-top: 10px;
+            color: #b0b0c0;
+            font-family: 'Candara', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .suggestion-keywords strong {
+            color: #00d2ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-magic"></i> PowerPoint Generator</h1>
+            <p>Transform your text into beautiful presentations with your own style</p>
+        </div>
+
+        <div class="form-container">
+            <form id="presentationForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="textInput">
+                        <i class="fas fa-file-text"></i> Your Content <span class="label-required">*</span>
+                    </label>
+                    <textarea 
+                        id="textInput" 
+                        name="text_input" 
+                        placeholder="Paste your text, markdown, or prose here. This could be a research paper, meeting notes, product description, or any content you want to turn into a presentation..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="guidance">
+                        <i class="fas fa-compass"></i> Guidance (Optional)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="guidance" 
+                        name="guidance" 
+                        placeholder="e.g., 'turn into an investor pitch deck', 'make it technical', 'focus on key benefits'"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-robot"></i> LLM Provider <span class="label-required">*</span>
+                    </label>
+                    <div class="provider-grid">
+                        <div class="provider-option">
+                            <input type="radio" id="openai" name="llm_provider" value="openai" checked>
+                            <label for="openai">
+                                <i class="fas fa-brain"></i><br>
+                                OpenAI
+                            </label>
+                        </div>
+                        <div class="provider-option">
+                            <input type="radio" id="anthropic" name="llm_provider" value="anthropic">
+                            <label for="anthropic">
+                                <i class="fas fa-microchip"></i><br>
+                                Anthropic
+                            </label>
+                        </div>
+                        <div class="provider-option">
+                            <input type="radio" id="gemini" name="llm_provider" value="gemini">
+                            <label for="gemini">
+                                <i class="fas fa-gem"></i><br>
+                                Gemini
+                            </label>
+                        </div>
+                        <div class="provider-option">
+                            <input type="radio" id="aipipe" name="llm_provider" value="aipipe">
+                            <label for="aipipe">
+                                <i class="fas fa-cloud"></i><br>
+                                AIPipe
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="apiKey">
+                        <i class="fas fa-key"></i> API Key <span class="label-required">*</span>
+                    </label>
+                    <input 
+                        type="password" 
+                        id="apiKey" 
+                        name="api_key" 
+                        placeholder="Enter your API key (OpenAI, Anthropic, Gemini, or AIPipe - never stored)"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-file-powerpoint"></i> PowerPoint Template <span class="label-required">*</span>
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            id="templateFile" 
+                            name="template_file" 
+                            accept=".pptx,.potx" 
+                            class="file-input"
+                            required
+                        >
+                        <label for="templateFile" class="file-input-label" id="fileLabel">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose your PowerPoint template (.pptx or .potx)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-images"></i> Additional Images (Optional)
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            id="imageFiles" 
+                            name="image_files" 
+                            accept=".jpg,.jpeg,.png,.gif,.bmp" 
+                            class="file-input"
+                            multiple
+                        >
+                        <label for="imageFiles" class="file-input-label" id="imageLabel">
+                            <i class="fas fa-image"></i>
+                            <span>Upload images to include in your presentation (JPG, PNG, GIF)</span>
+                        </label>
+                    </div>
+                    <small style="color: #666; font-size: 0.9rem; margin-top: 5px; display: block;">
+                        Images will be automatically placed in relevant slides with accompanying text
+                    </small>
+                    
+                    <!-- Image Suggestion Panel -->
+                    <div class="image-suggestion-panel">
+                        <h4>
+                            <i class="fas fa-lightbulb"></i>
+                            AI Image Suggestions
+                        </h4>
+                        
+                        <div class="suggestion-buttons">
+                            <button type="button" class="suggestion-btn" onclick="generateImageKeywords()">
+                                <i class="fas fa-robot"></i> Generate Keywords
+                            </button>
+                            <button type="button" class="suggestion-btn" onclick="clearSuggestions()">
+                                <i class="fas fa-eraser"></i> Clear
+                            </button>
+                        </div>
+                        
+                        <div class="suggestion-keywords" id="suggestionKeywords" style="display: none;">
+                            <strong>Suggested keywords:</strong> <span id="keywordsList">Click "Generate Keywords" to get AI-powered image suggestions based on your content</span>
+                        </div>
+                        
+                        <div class="image-sources">
+                            <div class="image-source-card" onclick="openImageSite('unsplash')">
+                                <i class="fas fa-camera"></i>
+                                <h5>Unsplash</h5>
+                                <p>High-quality free photos from professional photographers</p>
+                                <button class="visit-btn">Visit Unsplash</button>
+                            </div>
+                            
+                            <div class="image-source-card" onclick="openImageSite('pixabay')">
+                                <i class="fas fa-images"></i>
+                                <h5>Pixabay</h5>
+                                <p>Free images, photos, illustrations, and vectors</p>
+                                <button class="visit-btn">Visit Pixabay</button>
+                            </div>
+                            
+                            <div class="image-source-card" onclick="openImageSite('pexels')">
+                                <i class="fas fa-photo-video"></i>
+                                <h5>Pexels</h5>
+                                <p>Free stock photos and videos for commercial use</p>
+                                <button class="visit-btn">Visit Pexels</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-btn" id="generateBtn">
+                    <i class="fas fa-spinner loading" id="loadingIcon"></i>
+                    <span id="buttonText">Generate Presentation</span>
+                </button>
+
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+        </div>
+
+        <div class="features">
+            <h3>How It Works</h3>
+            <div class="features-grid">
+                <div class="feature">
+                    <i class="fas fa-paste"></i>
+                    <h4>Paste Your Content</h4>
+                    <p>Add any text, markdown, or prose you want to convert</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-upload"></i>
+                    <h4>Upload Template</h4>
+                    <p>Provide a PowerPoint file to extract styling and layouts</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-magic"></i>
+                    <h4>AI Processing</h4>
+                    <p>Our AI analyzes your content and structures it into slides</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-download"></i>
+                    <h4>Download Result</h4>
+                    <p>Get a formatted PowerPoint matching your template's style</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('presentationForm');
+            const fileInput = document.getElementById('templateFile');
+            const fileLabel = document.getElementById('fileLabel');
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingIcon = document.getElementById('loadingIcon');
+            const buttonText = document.getElementById('buttonText');
+            const errorMessage = document.getElementById('errorMessage');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+
+            // File input handling for template
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileLabel.classList.add('has-file');
+                    fileLabel.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>${file.name}</span>
+                    `;
+                } else {
+                    fileLabel.classList.remove('has-file');
+                    fileLabel.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Choose your PowerPoint template (.pptx or .potx)</span>
+                    `;
+                }
+            });
+
+            // File input handling for images
+            const imageInput = document.getElementById('imageFiles');
+            const imageLabel = document.getElementById('imageLabel');
+            
+            imageInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    imageLabel.classList.add('has-file');
+                    const fileText = files.length === 1 ? 
+                        `${files[0].name}` : 
+                        `${files.length} images selected`;
+                    imageLabel.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>${fileText}</span>
+                    `;
+                } else {
+                    imageLabel.classList.remove('has-file');
+                    imageLabel.innerHTML = `
+                        <i class="fas fa-image"></i>
+                        <span>Upload images to include in your presentation (JPG, PNG, GIF)</span>
+                    `;
+                }
+            });
+
+            // Form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Reset UI
+                errorMessage.style.display = 'none';
+                generateBtn.disabled = true;
+                loadingIcon.classList.add('active');
+                buttonText.textContent = 'Generating...';
+                progressBar.classList.add('active');
+                
+                // Animate progress bar
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    progressFill.style.width = progress + '%';
+                }, 500);
+
+                try {
+                    const formData = new FormData(form);
+                    
+                    const response = await fetch('/api/generate', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+
+                    if (response.ok) {
+                        // Success - download file
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'generated_presentation.pptx';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        
+                        buttonText.textContent = 'Success! Download Started';
+                        setTimeout(() => {
+                            buttonText.textContent = 'Generate Presentation';
+                        }, 3000);
+                    } else {
+                        // Error
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Generation failed');
+                    }
+                } catch (error) {
+                    clearInterval(progressInterval);
+                    console.error('Error:', error);
+                    errorMessage.textContent = error.message || 'An error occurred while generating the presentation.';
+                    errorMessage.style.display = 'block';
+                    buttonText.textContent = 'Generate Presentation';
+                } finally {
+                    generateBtn.disabled = false;
+                    loadingIcon.classList.remove('active');
+                    progressBar.classList.remove('active');
+                    progressFill.style.width = '0%';
+                }
+            });
+
+            // Character counter for textarea
+            const textInput = document.getElementById('textInput');
+            const charCounter = document.createElement('div');
+            charCounter.style.cssText = 'text-align: right; color: #666; font-size: 0.9rem; margin-top: 5px;';
+            textInput.parentNode.appendChild(charCounter);
+
+            textInput.addEventListener('input', function() {
+                const length = this.value.length;
+                charCounter.textContent = `${length.toLocaleString()} characters`;
+            });
+        });
+
+        // Image Suggestion Functions
+        function generateImageKeywords() {
+            const textInput = document.getElementById('textInput').value;
+            const keywordsDiv = document.getElementById('suggestionKeywords');
+            const keywordsList = document.getElementById('keywordsList');
+            
+            if (!textInput.trim()) {
+                alert('Please enter some content first to generate image keywords.');
+                return;
+            }
+            
+            // Show loading state
+            keywordsList.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing your content...';
+            keywordsDiv.style.display = 'block';
+            
+            // Simple keyword extraction (you can enhance this with actual AI)
+            setTimeout(() => {
+                const keywords = extractKeywords(textInput);
+                keywordsList.innerHTML = keywords.join(', ');
+            }, 1500);
+        }
+        
+        function extractKeywords(text) {
+            // Simple keyword extraction - can be enhanced with AI integration
+            const commonWords = ['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'must', 'this', 'that', 'these', 'those'];
+            
+            const words = text.toLowerCase()
+                .replace(/[^\w\s]/g, ' ')
+                .split(/\s+/)
+                .filter(word => word.length > 3 && !commonWords.includes(word));
+            
+            const wordCount = {};
+            words.forEach(word => {
+                wordCount[word] = (wordCount[word] || 0) + 1;
+            });
+            
+            const sortedWords = Object.entries(wordCount)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 8)
+                .map(([word]) => word);
+            
+            // Add some contextual keywords based on content type
+            const businessKeywords = ['business', 'strategy', 'growth', 'team', 'office', 'meeting', 'professional'];
+            const techKeywords = ['technology', 'computer', 'digital', 'innovation', 'data', 'software', 'development'];
+            const educationKeywords = ['education', 'learning', 'student', 'knowledge', 'research', 'academic', 'study'];
+            
+            if (text.toLowerCase().includes('business') || text.toLowerCase().includes('company')) {
+                sortedWords.push(...businessKeywords.slice(0, 3));
+            }
+            if (text.toLowerCase().includes('technology') || text.toLowerCase().includes('software')) {
+                sortedWords.push(...techKeywords.slice(0, 3));
+            }
+            if (text.toLowerCase().includes('education') || text.toLowerCase().includes('learning')) {
+                sortedWords.push(...educationKeywords.slice(0, 3));
+            }
+            
+            return [...new Set(sortedWords)].slice(0, 10);
+        }
+        
+        function clearSuggestions() {
+            const keywordsDiv = document.getElementById('suggestionKeywords');
+            const keywordsList = document.getElementById('keywordsList');
+            keywordsDiv.style.display = 'none';
+            keywordsList.innerHTML = 'Click "Generate Keywords" to get AI-powered image suggestions based on your content';
+        }
+        
+        function openImageSite(site) {
+            const textInput = document.getElementById('textInput').value;
+            let keywords = '';
+            
+            // Try to get generated keywords first
+            const keywordsList = document.getElementById('keywordsList').innerHTML;
+            if (keywordsList && !keywordsList.includes('Click') && !keywordsList.includes('Analyzing')) {
+                keywords = keywordsList.split(', ').slice(0, 3).join(' ');
+            } else if (textInput.trim()) {
+                // Extract quick keywords from text
+                const quickKeywords = extractKeywords(textInput).slice(0, 3).join(' ');
+                keywords = quickKeywords;
+            }
+            
+            let url = '';
+            const searchQuery = encodeURIComponent(keywords || 'business presentation');
+            
+            switch(site) {
+                case 'unsplash':
+                    url = `https://unsplash.com/s/photos/${searchQuery}`;
+                    break;
+                case 'pixabay':
+                    url = `https://pixabay.com/images/search/${searchQuery}/`;
+                    break;
+                case 'pexels':
+                    url = `https://www.pexels.com/search/${searchQuery}/`;
+                    break;
+            }
+            
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
