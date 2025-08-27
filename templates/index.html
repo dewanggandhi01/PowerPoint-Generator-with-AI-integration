@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerPoint Generator - Your Text, Your Style</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .form-group .label-required {
+            color: #e74c3c;
+        }
+
+        textarea, input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px dashed #e1e8ed;
+            border-radius: 10px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .file-input-label:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            color: #667eea;
+        }
+
+        .file-input-label.has-file {
+            border-color: #27ae60;
+            background: #e8f5e8;
+            color: #27ae60;
+        }
+
+        .file-input-label i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .provider-option {
+            position: relative;
+        }
+
+        .provider-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .provider-option label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .provider-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #f0f2ff;
+            color: #667eea;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.active {
+            display: inline-block;
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #c33;
+            display: none;
+        }
+
+        .features {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        .features h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .feature h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e1e8ed;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progress-animation 2s ease-in-out infinite;
+        }
+
+        @keyframes progress-animation {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            .provider-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-magic"></i> PowerPoint Generator</h1>
+            <p>Transform your text into beautiful presentations with your own style</p>
+        </div>
+
+        <div class="form-container">
+            <form id="presentationForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="textInput">
+                        <i class="fas fa-file-text"></i> Your Content <span class="label-required">*</span>
+                    </label>
+                    <textarea 
+                        id="textInput" 
+                        name="text_input" 
+                        placeholder="Paste your text, markdown, or prose here. This could be a research paper, meeting notes, product description, or any content you want to turn into a presentation..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="guidance">
+                        <i class="fas fa-compass"></i> Guidance (Optional)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="guidance" 
+                        name="guidance" 
+                        placeholder="e.g., 'turn into an investor pitch deck', 'make it technical', 'focus on key benefits'"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-robot"></i> LLM Provider <span class="label-required">*</span>
+                    </label>
+                    <div class="provider-grid">
+                        <div class="provider-option">
+                            <input type="radio" id="openai" name="llm_provider" value="openai" checked>
+                            <label for="openai">
+                                <i class="fas fa-brain"></i><br>
+                                OpenAI
+                            </label>
+                        </div>
+                        <div class="provider-option">
+                            <input type="radio" id="anthropic" name="llm_provider" value="anthropic">
+                            <label for="anthropic">
+                                <i class="fas fa-microchip"></i><br>
+                                Anthropic
+                            </label>
+                        </div>
+                        <div class="provider-option">
+                            <input type="radio" id="gemini" name="llm_provider" value="gemini">
+                            <label for="gemini">
+                                <i class="fas fa-gem"></i><br>
+                                Gemini
+                            </label>
+                        </div>
+                        <div class="provider-option">
+                            <input type="radio" id="aipipe" name="llm_provider" value="aipipe">
+                            <label for="aipipe">
+                                <i class="fas fa-cloud"></i><br>
+                                AIPipe
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="apiKey">
+                        <i class="fas fa-key"></i> API Key <span class="label-required">*</span>
+                    </label>
+                    <input 
+                        type="password" 
+                        id="apiKey" 
+                        name="api_key" 
+                        placeholder="Enter your API key (OpenAI, Anthropic, Gemini, or AIPipe - never stored)"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-file-powerpoint"></i> PowerPoint Template <span class="label-required">*</span>
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            id="templateFile" 
+                            name="template_file" 
+                            accept=".pptx,.potx" 
+                            class="file-input"
+                            required
+                        >
+                        <label for="templateFile" class="file-input-label" id="fileLabel">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Choose your PowerPoint template (.pptx or .potx)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-images"></i> Additional Images (Optional)
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            id="imageFiles" 
+                            name="image_files" 
+                            accept=".jpg,.jpeg,.png,.gif,.bmp" 
+                            class="file-input"
+                            multiple
+                        >
+                        <label for="imageFiles" class="file-input-label" id="imageLabel">
+                            <i class="fas fa-image"></i>
+                            <span>Upload images to include in your presentation (JPG, PNG, GIF)</span>
+                        </label>
+                    </div>
+                    <small style="color: #666; font-size: 0.9rem; margin-top: 5px; display: block;">
+                        Images will be automatically placed in relevant slides with accompanying text
+                    </small>
+                </div>
+
+                <button type="submit" class="generate-btn" id="generateBtn">
+                    <i class="fas fa-spinner loading" id="loadingIcon"></i>
+                    <span id="buttonText">Generate Presentation</span>
+                </button>
+
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+        </div>
+
+        <div class="features">
+            <h3>How It Works</h3>
+            <div class="features-grid">
+                <div class="feature">
+                    <i class="fas fa-paste"></i>
+                    <h4>Paste Your Content</h4>
+                    <p>Add any text, markdown, or prose you want to convert</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-upload"></i>
+                    <h4>Upload Template</h4>
+                    <p>Provide a PowerPoint file to extract styling and layouts</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-magic"></i>
+                    <h4>AI Processing</h4>
+                    <p>Our AI analyzes your content and structures it into slides</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-download"></i>
+                    <h4>Download Result</h4>
+                    <p>Get a formatted PowerPoint matching your template's style</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('presentationForm');
+            const fileInput = document.getElementById('templateFile');
+            const fileLabel = document.getElementById('fileLabel');
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingIcon = document.getElementById('loadingIcon');
+            const buttonText = document.getElementById('buttonText');
+            const errorMessage = document.getElementById('errorMessage');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+
+            // File input handling for template
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileLabel.classList.add('has-file');
+                    fileLabel.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>${file.name}</span>
+                    `;
+                } else {
+                    fileLabel.classList.remove('has-file');
+                    fileLabel.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Choose your PowerPoint template (.pptx or .potx)</span>
+                    `;
+                }
+            });
+
+            // File input handling for images
+            const imageInput = document.getElementById('imageFiles');
+            const imageLabel = document.getElementById('imageLabel');
+            
+            imageInput.addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    imageLabel.classList.add('has-file');
+                    const fileText = files.length === 1 ? 
+                        `${files[0].name}` : 
+                        `${files.length} images selected`;
+                    imageLabel.innerHTML = `
+                        <i class="fas fa-check-circle"></i>
+                        <span>${fileText}</span>
+                    `;
+                } else {
+                    imageLabel.classList.remove('has-file');
+                    imageLabel.innerHTML = `
+                        <i class="fas fa-image"></i>
+                        <span>Upload images to include in your presentation (JPG, PNG, GIF)</span>
+                    `;
+                }
+            });
+
+            // Form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Reset UI
+                errorMessage.style.display = 'none';
+                generateBtn.disabled = true;
+                loadingIcon.classList.add('active');
+                buttonText.textContent = 'Generating...';
+                progressBar.classList.add('active');
+                
+                // Animate progress bar
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    progressFill.style.width = progress + '%';
+                }, 500);
+
+                try {
+                    const formData = new FormData(form);
+                    
+                    const response = await fetch('/api/generate', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+
+                    if (response.ok) {
+                        // Success - download file
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'generated_presentation.pptx';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        
+                        buttonText.textContent = 'Success! Download Started';
+                        setTimeout(() => {
+                            buttonText.textContent = 'Generate Presentation';
+                        }, 3000);
+                    } else {
+                        // Error
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Generation failed');
+                    }
+                } catch (error) {
+                    clearInterval(progressInterval);
+                    console.error('Error:', error);
+                    errorMessage.textContent = error.message || 'An error occurred while generating the presentation.';
+                    errorMessage.style.display = 'block';
+                    buttonText.textContent = 'Generate Presentation';
+                } finally {
+                    generateBtn.disabled = false;
+                    loadingIcon.classList.remove('active');
+                    progressBar.classList.remove('active');
+                    progressFill.style.width = '0%';
+                }
+            });
+
+            // Character counter for textarea
+            const textInput = document.getElementById('textInput');
+            const charCounter = document.createElement('div');
+            charCounter.style.cssText = 'text-align: right; color: #666; font-size: 0.9rem; margin-top: 5px;';
+            textInput.parentNode.appendChild(charCounter);
+
+            textInput.addEventListener('input', function() {
+                const length = this.value.length;
+                charCounter.textContent = `${length.toLocaleString()} characters`;
+            });
+        });
+    </script>
+</body>
+</html>
