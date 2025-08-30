@@ -36,6 +36,29 @@
             padding: 40px;
             text-align: center;
             border-bottom: 3px solid #444455;
+            position: relative;
+        }
+
+        .nav-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-home:hover {
+            background: linear-gradient(135deg, #0099cc, #007aa3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
         }
 
         .header h1 {
@@ -535,6 +558,10 @@
 <body>
     <div class="container">
         <div class="header">
+            <a href="/" class="nav-home">
+                <i class="fas fa-home"></i>
+                Home
+            </a>
             <h1><i class="fas fa-magic"></i> PowerPoint Generator</h1>
             <p>Transform your text into beautiful presentations with your own style</p>
         </div>
