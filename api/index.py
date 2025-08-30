@@ -1,13 +1,22 @@
 from flask import Flask, render_template, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 import os
+import sys
 import tempfile
 import logging
+
+# Add the parent directory to Python path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from src.presentation_generator import PresentationGenerator
 from src.llm_service import LLMService
 from src.template_analyzer import TemplateAnalyzer
 
-app = Flask(__name__)
+# Get the directory where this file is located
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+
+app = Flask(__name__, template_folder=os.path.join(parent_dir, 'templates'))
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 
 # Configure logging
@@ -94,9 +103,9 @@ def health_check():
     """Health check endpoint."""
     return jsonify({'status': 'healthy', 'message': 'PowerPoint Generator API is running'})
 
-# Vercel requires this for serverless deployment
-def handler(request):
-    return app(request.environ, request.start_response)
+# Export the Flask app for Vercel
+# Vercel will automatically handle the WSGI interface
+app = app
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
