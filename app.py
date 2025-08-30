@@ -19,8 +19,13 @@ logger = logging.getLogger(__name__)
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 @app.route('/')
-def index():
-    """Serve the main application page."""
+def home():
+    """Serve the home/landing page."""
+    return render_template('home.html')
+
+@app.route('/generator')
+def generator():
+    """Serve the main generator application page."""
     return render_template('index.html')
 
 @app.route('/api/generate', methods=['POST'])
